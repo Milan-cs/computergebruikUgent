@@ -45,46 +45,44 @@ up() {
     done
 }
 
-bestand2=$(echo $1 | cut -d '/' -f3)
+eerstebestand=$(echo $1 | cut -d '/' -f3)
 bestand=$1
 
 COUNTER=0
 while [[ $COUNTER -lt $s ]];do
-if [[ $COUNTER -eq 0 ]];then
-    newdir=$(dirname $bestand)
-    cat $bestand | head -3 | tail -2
-    cd $newdir
-    head -$n $bestand2 > file.txt
-else
-    head -$n $newbestand > file.txt
-fi
-
-
-token=$(cat file.txt | head -1 | cut -d ' ' -f2)
-newbestand=$(cat file.txt | head -1 | cut -d ' ' -f3)
-rm file.txt
-
-
-
-if [[ $token =~ ^[1-9]$ ]];then
-    up $token
-elif [[ $token =~ ^0$ ]];then
-        cd .
-else
-    if [[ ! -d "$token" ]];then
-        exit 0
+    if [[ $COUNTER -eq 0 ]];then
+        newdir=$(dirname $bestand)
+        cat $bestand | head -3 | tail -2
+        cd $newdir
+        head -$n $bestand2 > file.txt
     else
-        cd ./$token
+        head -$n $newbestand > file.txt
     fi
-fi
+    
+    token=$(cat file.txt | head -1 | cut -d ' ' -f2)
+    newbestand=$(cat file.txt | head -1 | cut -d ' ' -f3)
+    rm file.txt
 
-if [[ $m -eq 1 ]];then
-    cat $newbestand | head -3 | tail -2 | rev
-else
-    cat $newbestand | head -3 | tail -2
-fi
 
-let COUNTER=COUNTER+1
+    if [[ $token =~ ^[1-9]$ ]];then
+    up $token
+    elif [[ $token =~ ^0$ ]];then
+        cd .
+    else
+        if [[ ! -d "$token" ]];then
+            exit 0
+        else
+            cd ./$token
+        fi
+    fi
+
+    if [[ $m -eq 1 ]];then
+        cat $newbestand | head -3 | tail -2 | rev
+    else
+        cat $newbestand | head -3 | tail -2
+    fi
+
+    let COUNTER=COUNTER+1
 done
 exit 0
 
