@@ -1,5 +1,3 @@
-#! /usr/bin/bash
-
 syntax() {
         echo "Syntax: christmas [-m] [-n integer] [-s integer] FILE" 1>&2
 }
@@ -43,23 +41,23 @@ up() {
         cd ..
     done
 }
-bestand2=$(echo $1 | cut -d '/' -f3)
+bestand2=$(echo "${1}" | cut -d '/' -f3)
 bestand=$1
 
 COUNTER=0
 while [[ $COUNTER -lt $s ]];do
 if [[ $COUNTER -eq 0 ]];then
-    newdir=$(dirname $bestand)
-    cat $bestand | head -3 | tail -2
+    newdir=$(dirname "${bestand}")
+    cat $bestand | sed -n "2,$((n+1))p"
     cd $newdir
-    head -$n $bestand2 > file.txt
+    head -"${n}" "${bestand2}" > file.txt
 else
-    head -$n $newbestand > file.txt
+    head -"${n}" "${newbestand}" > file.txt
 fi
 
 
 token=$(cat file.txt | head -1 | cut -d ' ' -f2)
-newbestand=$(cat file.txt | head -1 | cut -d ' ' -f3)
+newbestand=$(cat file.txt | head -1 | sed -re "s/\\r//g" | cut -d ' ' -f3)
 rm file.txt
 if [[ $token =~ ^[1-9]$ ]];then
     up $token
@@ -72,9 +70,11 @@ else
         cd ./$token
     fi
 fi
-
-cat $newbestand | head -3 | tail -2
+naam=$(cat ${newbestand} | head -1 | cut -d ' ' -f1)
+if [[ "$naam" != "skip" ]];then
+sed -n "2,$((n+1))p" "${newbestand}" 
 let COUNTER=COUNTER+1
+fi
 done
 
 
