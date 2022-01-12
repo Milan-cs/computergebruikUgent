@@ -29,8 +29,8 @@ if [[ $# -ne 3 ]]
 then
     syntax
 fi
-# read arguments
-username="$1"
+
+positief="$1"
 userdir="$2"
 tokendir="$3"
 # check threshold
@@ -51,16 +51,20 @@ then
     echo "$(basename $0): de opgegeven naam is niet gevonden" 1>&2
     exit 4
 fi
+
 positief=$1
 userdir=$2
 tokendir=$3
+
 usertokens=$(find ./$userdir -type f -name "$positief.txt")
-cat $usertokens | while read line; do
-tFILE=$(find ./$tokendir -type f -name "*$line*")
-cat $tFILE | while read line2 ; do
-echo $line2 $line >> tokens.txt
-done
-done
+cat $usertokens | while read line
+    do
+        tFILE=$(find ./$tokendir -type f -name "*$line*")
+            cat $tFILE | while read line2
+            do
+                echo $line2 $line >> tokens.txt
+            done
+    done
 cat tokens.txt | sort | cut -d ' ' -f1 | uniq | while read line ; do
     temp=$(cat tokens.txt | sort | egrep "$line" | tr -d '\n' | sed "s/$line//g" | sed -re "s/^.(.*)/\1/" |sed "s/ /, /g")
     wc=$(echo $temp | wc -w)
