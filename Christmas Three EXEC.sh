@@ -1,6 +1,9 @@
+
+
 syntax() {
         echo "Syntax: christmas [-m] [-n integer] [-s integer] FILE" 1>&2
 }
+
 m=0
 n=1
 s=15
@@ -35,6 +38,10 @@ if [ $# -ne 1 ];then
     exit 4
 fi
 
+if [[ ! -f $1 ]];then
+    exit 0
+fi
+
 up() {
     i=${1:-1}
     while ((i--)); do
@@ -46,39 +53,42 @@ bestand=$1
 
 COUNTER=0
 while [[ $COUNTER -lt $s ]];do
-if [[ $COUNTER -eq 0 ]];then
-    newdir=$(dirname "${bestand}")
-    cat $bestand | sed -n "2,$((n+1))p"
-    cd $newdir
-    head -"${n}" "${bestand2}" > file.txt
-else
-    head -"${n}" "${newbestand}" > file.txt
-fi
+    if [[ $COUNTER -eq 0 ]];then
+        newdir=$(dirname "${bestand}")
+            if [[ $m -eq 1 ]];then
+                cat $bestand | sed -n "2,$((n+1))p" | rev
+            else
+                cat $bestand | sed -n "2,$((n+1))p"
+            fi
+        cd $newdir
+        head -"${n}" "${bestand2}" > file.txt
+    else
+        head -"${n}" "${newbestand}" > file.txt
+    fi
 
-
-token=$(cat file.txt | head -1 | cut -d ' ' -f2)
-newbestand=$(cat file.txt | head -1 | sed -re "s/\\r//g" | cut -d ' ' -f3)
-rm file.txt
-if [[ $token =~ ^[1-9]$ ]];then
-    up $token
-elif [[ $token =~ ^0$ ]];then
+    token=$(cat file.txt | head -1 | cut -d ' ' -f2)
+    newbestand=$(cat file.txt | head -1 | sed -re "s/\\r//g" | cut -d ' ' -f3)
+    rm file.txt
+    if [[ $token =~ ^[1-9]$ ]];then
+        up $token
+    elif [[ $token =~ ^0$ ]];then
         cd .
-else
-    if [[ ! -d "$token" ]];then
-        exit 0
     else
-        cd ./$token
+        if [[ ! -d "$token" ]];then
+            exit 0
+        else
+            cd ./$token
+        fi
     fi
-fi
-naam=$(cat ${newbestand} | head -1 | cut -d ' ' -f1)
-if [[ "$naam" != "skip" ]];then
-    if [[ $m -eq 1 ]];then
-        sed -n "2,$((n+1))p" "${newbestand}" | rev
-    else
-        sed -n "2,$((n+1))p" "${newbestand}" 
+    naam=$(cat ${newbestand} | head -1 | cut -d ' ' -f1)
+    if [[ "$naam" != "skip" ]];then
+        if [[ $m -eq 1 ]];then
+            sed -n "2,$((n+1))p" "${newbestand}" | rev
+        else
+            sed -n "2,$((n+1))p" "${newbestand}" 
+        fi
     fi
-let COUNTER=COUNTER+1
-fi
+    let COUNTER=COUNTER+1
 done
 
 
