@@ -1,10 +1,8 @@
 #! usr/bin/bash
 
-
 syntax() {
         echo "Syntaxis: covid [-d DATUM] [-p] PLAATS [FILE]" 1>&2
 }
-
 d=0
 p=0
 
@@ -37,11 +35,10 @@ if [[ ! -f $FILE || ! -r $FILE ]];then
     echo "covid: het opgegeven bestand bestaat niet of is niet leesbaar" 1>&2
     exit 2
 fi
-#make new variable to check if d is enddate
-f=1
+
 if [[ $d -eq 0 ]];then
     d=$(cat $FILE | tail -1 | cut -d ',' -f1)
-    f=0
+    
 fi
 
 if ! egrep -q "$d" $FILE || ! egrep -q "$1" $FILE ;then
@@ -49,13 +46,6 @@ if ! egrep -q "$d" $FILE || ! egrep -q "$1" $FILE ;then
     exit 4
 fi
 regio=$1
-#opnames berekenen
-begindatum=$(date --date="${d} -6 day" +%Y-%m-%d)
-#eindatum aanpassen zodat het volgende sed commando correct werkt.
-einddatum=$(date --date="${d} +1 day" +%Y-%m-%d)
-
-opnames1=$(egrep "$regio" $FILE | sed -n "/$begindatum/,/$einddatum/p"| egrep -v "$einddatum" | \
-cut -d "," -f4 | tr '\n' '+' | sed "s/+$/\n/g" | bc)
 
 # berekeken opnames
 #date #-begindag #einddag
@@ -69,9 +59,9 @@ opnamesf () {
 }
 # berekeken opnames laatste 7 dagen
 opnames1=$(opnamesf "$d" "-6" "+1") 
-#Hospitalisatietrend bereken
+# berekeken opnames eerste 7 dagen
 opnames2=$(opnamesf "$d" "-20" "-13")
-
+#Hospitalisatietrend bereken
 trend=$(echo "scale=2 ; ($opnames1 / $opnames2 - 1)*100" | bc)
 
 if [[ $p -eq 0 ]];then
