@@ -72,7 +72,11 @@ else
 fi
 naam=$(cat ${newbestand} | head -1 | cut -d ' ' -f1)
 if [[ "$naam" != "skip" ]];then
-sed -n "2,$((n+1))p" "${newbestand}" 
+    if [[ $m -eq 1 ]];then
+        sed -n "2,$((n+1))p" "${newbestand}" | rev
+    else
+        sed -n "2,$((n+1))p" "${newbestand}" 
+    fi
 let COUNTER=COUNTER+1
 fi
 done
